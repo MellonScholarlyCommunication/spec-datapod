@@ -1223,7 +1223,7 @@ Possible extra rowspan handling
 </style>
   <meta content="Bikeshed version 5f7b0e20, updated Tue Aug 18 15:46:28 2020 -0700" name="generator">
   <link href="https://mellonscholarlycommunication.github.io/spec-datapod" rel="canonical">
-  <meta content="2b10b87cde4a6e9e728f5e535b7b90b5d448278b" name="document-revision">
+  <meta content="b930ea904713b7b6f7ab70006660b18c9719c6d1" name="document-revision">
 <style>
 table {
   margin: 25px auto;
@@ -1474,26 +1474,27 @@ Parts of this work may be from another specification document.  If so, those par
     <li><a href="#intro"><span class="secno">2</span> <span class="content">Introduction</span></a>
     <li><a href="#definitions"><span class="secno">3</span> <span class="content">Definitions</span></a>
     <li><a href="#high-level"><span class="secno">4</span> <span class="content">High-level overview</span></a>
-    <li>
-     <a href="#data-pod-creation"><span class="secno">5</span> <span class="content">Creating a data pod</span></a>
-     <ol class="toc">
-      <li><a href="#data-pod-deployment"><span class="secno">5.1</span> <span class="content">Deployment</span></a>
-     </ol>
+    <li><a href="#data-pod-creation"><span class="secno">5</span> <span class="content">Creating a data pod</span></a>
     <li>
      <a href="#resource-storage"><span class="secno">6</span> <span class="content">Resource storage</span></a>
      <ol class="toc">
-      <li><a href="#adding-resources"><span class="secno">6.1</span> <span class="content">Adding resources</span></a>
-      <li><a href="#adding-resources①"><span class="secno">6.2</span> <span class="content">Storing resource metadata</span></a>
-      <li><a href="#updating-resources"><span class="secno">6.3</span> <span class="content">Updating resources</span></a>
+      <li><a href="#indexing"><span class="secno">6.1</span> <span class="content">indexing</span></a>
+      <li><a href="#metadata"><span class="secno">6.2</span> <span class="content">metadata</span></a>
      </ol>
     <li><a href="#resource-versioning"><span class="secno">7</span> <span class="content">Resource Versioning</span></a>
-    <li><a href="#notifications"><span class="secno">8</span> <span class="content">Notifiations</span></a>
-    <li><a href="#implementation"><span class="secno">9</span> <span class="content">Implementation</span></a>
+    <li><a href="#resource-events"><span class="secno">8</span> <span class="content">Resource Event Information</span></a>
+    <li><a href="#notifications"><span class="secno">9</span> <span class="content">Notifiations</span></a>
+    <li>
+     <a href="#roadmap"><span class="secno">10</span> <span class="content">Spec roadmap</span></a>
+     <ol class="toc">
+      <li><a href="#roadmap-september"><span class="secno">10.1</span> <span class="content">September</span></a>
+     </ol>
     <li><a href="#conformance"><span class="secno"></span> <span class="content"> Conformance</span></a>
     <li>
      <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
      <ol class="toc">
       <li><a href="#index-defined-here"><span class="secno"></span> <span class="content">Terms defined by this specification</span></a>
+      <li><a href="#index-defined-elsewhere"><span class="secno"></span> <span class="content">Terms defined by reference</span></a>
      </ol>
     <li>
      <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
@@ -1505,7 +1506,7 @@ Parts of this work may be from another specification document.  If so, those par
   </nav>
   <main>
    <h2 class="heading settled" data-level="1" id="set"><span class="secno">1. </span><span class="content">Set of documents</span><a class="self-link" href="#set"></a></h2>
-   <p>This document is one of the specifications produced by the <strong>ResearcherPod</strong> and <strong>ErfgoedPod</strong> project:</p>
+   <p>This document is one of the specifications produced by the <strong>Mellon</strong> and <strong>ErfgoedPod</strong> project:</p>
    <ol>
     <li data-md>
      <p><a href="/spec-overview/">Overview</a></p>
@@ -1523,17 +1524,17 @@ Parts of this work may be from another specification document.  If so, those par
      <p><a href="/spec-collector/">Collector</a></p>
    </ol>
    <h2 class="heading settled" data-level="2" id="intro"><span class="secno">2. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
-   <p>In a <a href="https://solidproject.org/">Solid decentralized network</a>, data is stored in a distributed network of data pods.
-These data pods are used to store a variety of resources, that are available over the Web with unique identifiers.
-This document outlines the requirements for a data pod to participate in a decentralized network .</p>
-   <p>The remainder of this document specifies the requirements for implementing an <a data-link-type="dfn">Solid Pod</a> component.</p>
+    In a <a href="https://solidproject.org/">Solid decentralized network</a>, data is stored in a distributed network of data pods.
+Data stored on these data pods is made available over the Web with unique identifiers, enabling other actors and applications on the network to interact with the available resources without the need for a centralized service.
+If we want to keep track of the lifecycle and interactions for the published resources on a data pod, requirements have to be specified for any data pod implementation to support this functionality.
+In this document, we define the required functionality for a data pod implementation that can incorporate <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event" id="ref-for-concept-event">Event</a> information for all published resources on the data pod. 
    <h2 class="heading settled" data-level="3" id="definitions"><span class="secno">3. </span><span class="content">Definitions</span><a class="self-link" href="#definitions"></a></h2>
    <p>This document uses the following defined terms from <a data-link-type="biblio" href="#biblio-spec-overview">[spec-overview]</a>:</p>
    <ul>
     <li data-md>
-     <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="actor">Actor</dfn></p>
+     <p><dfn data-dfn-type="dfn" data-export id="actor">Actor<a class="self-link" href="#actor"></a></dfn></p>
     <li data-md>
-     <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="artefact">Artefact</dfn></p>
+     <p><dfn data-dfn-type="dfn" data-export id="artefact">Artefact<a class="self-link" href="#artefact"></a></dfn></p>
     <li data-md>
      <p><dfn data-dfn-type="dfn" data-export id="maintainer">Maintainer<a class="self-link" href="#maintainer"></a></dfn></p>
     <li data-md>
@@ -1545,41 +1546,71 @@ This document outlines the requirements for a data pod to participate in a decen
     <li data-md>
      <p><dfn data-dfn-type="dfn" data-export id="service-hub">Service Hub<a class="self-link" href="#service-hub"></a></dfn></p>
     <li data-md>
-     <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-export id="policy">Policy</dfn></p>
+     <p><dfn data-dfn-type="dfn" data-export id="policy">Policy<a class="self-link" href="#policy"></a></dfn></p>
     <li data-md>
      <p><dfn data-dfn-type="dfn" data-export id="dashboard">Dashboard<a class="self-link" href="#dashboard"></a></dfn></p>
    </ul>
    <h2 class="heading settled" data-level="4" id="high-level"><span class="secno">4. </span><span class="content">High-level overview</span><a class="self-link" href="#high-level"></a></h2>
-    A <a data-link-type="dfn" href="#data-pod" id="ref-for-data-pod">Data pod</a> is a platform that enables actors in the network to store resources and publish them to the network. <a data-link-type="dfn" href="#actor" id="ref-for-actor">Actors</a> in the network use these platforms to store their <a data-link-type="dfn" href="#artefact" id="ref-for-artefact">artefacts</a>, receive notifications from other actors in their <a data-link-type="dfn" href="#inbox" id="ref-for-inbox">inbox</a>, and store their <a data-link-type="dfn" href="#policy" id="ref-for-policy">policies</a>. 
+    A <a data-link-type="dfn">Solid</a> <a data-link-type="dfn" href="#data-pod" id="ref-for-data-pod">Data pod</a> is a personal data space on the Web.
+An actor can use this data space to store and share resources over the Web, and receive notifications from other actors in an advertised <a data-link-type="dfn" href="#inbox" id="ref-for-inbox">inbox</a> resource directory.
+To track the the lifecycle and its interactions of resources published on a data pod in decentralized networks, a data pod implementation must provide functionality for the storage and discovery of these events for their respective resources.
+In <a href="#resource-storage">§ 6 Resource storage</a>, we define the base requirements for the storage of resources on the network.
+In <a href="#resource-versioning">§ 7 Resource Versioning</a>, we define how resource versioning can be handled on the data pod.
+In <a href="#resource-events">§ 8 Resource Event Information</a>, the requirements are defined for the storage and discovery of an Event Log for a given resource on the data pod.
+In <a href="#notifications">§ 9 Notifiations</a>, the requirement is defined for the data pod to be a <a href="https://www.w3.org/TR/ldn/">Linked Data Notification</a> Receiver. 
    <h2 class="heading settled" data-level="5" id="data-pod-creation"><span class="secno">5. </span><span class="content">Creating a data pod</span><a class="self-link" href="#data-pod-creation"></a></h2>
-   <h3 class="heading settled" data-level="5.1" id="data-pod-deployment"><span class="secno">5.1. </span><span class="content">Deployment</span><a class="self-link" href="#data-pod-deployment"></a></h3>
-    A data pod MUST be deployable as a <dfn data-dfn-type="dfn" data-export id="local-background-process">local background process<a class="self-link" href="#local-background-process"></a></dfn> or as a <dfn data-dfn-type="dfn" data-export id="remote-web-service">remote web service<a class="self-link" href="#remote-web-service"></a></dfn>. 
+    A Solid data pod MUST be deployable as a <dfn data-dfn-type="dfn" data-export id="local-background-process">local background process<a class="self-link" href="#local-background-process"></a></dfn> or as a <dfn data-dfn-type="dfn" data-export id="remote-web-service">remote web service<a class="self-link" href="#remote-web-service"></a></dfn>. 
+In the case that a data pod is deployed as a local process, the data pod instance should be connected to the Web at all times if the data pod should be discoverable permanently in the network.
 In the case of the latter, an actor in the network MUST be able to create their own data pod using this web service. 
    <h2 class="heading settled" data-level="6" id="resource-storage"><span class="secno">6. </span><span class="content">Resource storage</span><a class="self-link" href="#resource-storage"></a></h2>
-    A data pod in the network MUST provide functionality to store and publish resources on the network.
-In this section, we assume all actors have the correct permissions set where not explicitly mentioned. 
-   <h3 class="heading settled" data-level="6.1" id="adding-resources"><span class="secno">6.1. </span><span class="content">Adding resources</span><a class="self-link" href="#adding-resources"></a></h3>
-    A data pod MUST provide an interface over the Web that enables actors to add new resources to the data pod.
-These added resources MUST be available for other actors on the network with the correct permissions set.
-The data pod SHOULD support adding both RDF and non-RDF resources. 
-   <h3 class="heading settled" data-level="6.2" id="adding-resources①"><span class="secno">6.2. </span><span class="content">Storing resource metadata</span><a class="self-link" href="#adding-resources①"></a></h3>
-    The data pod MUST be able to store metadata related to resources.
-This metadata MUST be findable on retrieval of the resource.
-Adding and retrieving metadata MUST be available for both RDF and non-RDF resources, depending on which data types can be added to the data pod. 
-   <h3 class="heading settled" data-level="6.3" id="updating-resources"><span class="secno">6.3. </span><span class="content">Updating resources</span><a class="self-link" href="#updating-resources"></a></h3>
-    A data pod MUST provide an interface over the Web that enables actors to update resources on the data pod.
-The updated resource MUST be available for all actors in the network.
-The data pod MAY create <a data-link-type="dfn">mementos</a> of the old version of the resource, and make this available using the <a href="#resource-versioning">resource versioning</a>. 
+   <h3 class="heading settled" data-level="6.1" id="indexing"><span class="secno">6.1. </span><span class="content">indexing</span><a class="self-link" href="#indexing"></a></h3>
+    Any resource stored on the data pod should be included in an index on the data pod to enable discovery of the resources by applications and actors in the network.
+A first indexing method is to make use of a <a href="https://github.com/solid/solid/blob/main/proposals/data-discovery.md">Type Index</a>.
+By indexing the resources in a public type index, actors and applications in the network can discover resources of a specific type.
+A second method is to index the resources using a <a href="https://shapetrees.org/">Shape Tree</a>.
+The shape tree specification defines where resources matching a specific shape are stored on the data pod.
+By parsing the available shape tree, any actor or application on the network can discover resources for a specific shape. 
+   <h3 class="heading settled" data-level="6.2" id="metadata"><span class="secno">6.2. </span><span class="content">metadata</span><a class="self-link" href="#metadata"></a></h3>
+    The storage of resource metadata for non-RDF resources is desirable on a Solid Pod implementation.
+Resource metadata can be added to non-RDF resources by creating a resource with the .meta extension, according to the <a href="https://github.com/solid/solid-spec">Solid specification</a>. 
    <h2 class="heading settled" data-level="7" id="resource-versioning"><span class="secno">7. </span><span class="content">Resource Versioning</span><a class="self-link" href="#resource-versioning"></a></h2>
-    The data pod platform MAY provide functionality for resource versioning.
-If stored resources provide inherent versioning functionality, this may be mimicked by the data pod.
-Resource versioning on the data pod is handled using the <a href="http://mementoweb.org/guide/quick-intro/">memento protocol</a>. 
-   <p>An example implementation of resource versioning using the <a data-link-type="dfn">memento protocol</a> in a data pod setting can be found in the <a href="https://fcrepo.github.io/fcrepo-specification/#resource-versioning">fedora API Specification</a>.</p>
-   <h2 class="heading settled" data-level="8" id="notifications"><span class="secno">8. </span><span class="content">Notifiations</span><a class="self-link" href="#notifications"></a></h2>
-    Notifications are handled using the <a href="https://www.w3.org/TR/ldn/">Linked Data Notifications Specification</a>.
-A data pod MUST be a valid <a href="https://www.w3.org/TR/ldn/#receiver">Linked Data Notifications Receiver</a>.
-All inboxes defined on the data pod MUST support GET and POST requests on the Inbox URL. 
-   <h2 class="heading settled" data-level="9" id="implementation"><span class="secno">9. </span><span class="content">Implementation</span><a class="self-link" href="#implementation"></a></h2>
+    The data pod may provide functionality to support versioning of stored resources.
+Support for such versioning is not built in to the Solid specification.
+Resource versioning in a Solid pod environment can be implemented according to the definition by the <a href="https://fedora.info/2021/05/01/spec/#resource-versioning">Fedora API specification</a> which is based on the <a data-link-type="dfn">memento</a> protocol.
+In cases where it is important to be able to reference specific versions of a resource, versioning may be handled by generating a new URI for different resource versions.
+Version linking can be handled using the DCAT vocabulary, by adding the versioning information directly to the resource in the case of an RDF resourcem, or to the metdata resource in case of non-RDF resources. 
+   <h2 class="heading settled" data-level="8" id="resource-events"><span class="secno">8. </span><span class="content">Resource Event Information</span><a class="self-link" href="#resource-events"></a></h2>
+    The data pod may provide functionality to store <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-event" id="ref-for-concept-event①">Event</a> data related to resources stored on the data pod.
+To provide this functionality, the data pod must implement the <a href="/spec-eventlog/">Event Log</a> specification.
+This specification dictates how event related data must be stored on the data pod, and how it can be discovered by external actors in the network. 
+   <h2 class="heading settled" data-level="9" id="notifications"><span class="secno">9. </span><span class="content">Notifiations</span><a class="self-link" href="#notifications"></a></h2>
+    In the Solid ecosystem, notifications serve as the main communication mechanism in a network of Solid Pods.
+These notifications follow the <a href="https://www.w3.org/TR/ldn/">Linked Data Notifications Specification</a> (LDN).
+Any Solid pod in the network serves as an LDN <a data-link-type="dfn">Receiver</a>, and consequently has the ability to receive notifications from any actor in the network.
+By defining an inbox on a resource, notifications for different resources can be directed towards different inboxes defined on the data pod.
+The actor managing the Solid pod may choose to manually process the incoming notifications or can automate this process through an external <a data-link-type="dfn">Orchestrator</a> service.
+A Linked Data Notification has no guarantee of any response being given or any action being undertaken.
+Any action required on receiving specific notifications has to be defined and enforced separately. 
+   <h2 class="heading settled" data-level="10" id="roadmap"><span class="secno">10. </span><span class="content">Spec roadmap</span><a class="self-link" href="#roadmap"></a></h2>
+   <h3 class="heading settled" data-level="10.1" id="roadmap-september"><span class="secno">10.1. </span><span class="content">September</span><a class="self-link" href="#roadmap-september"></a></h3>
+   <ol>
+    <li data-md>
+     <p>work out requirements for resource versioning in Solid.</p>
+     <ul>
+      <li data-md>
+       <p>Is time based versioning useful for our usecases?</p>
+      <li data-md>
+       <p>What is the best approach to version taggin for specific resources and discovery?</p>
+      <li data-md>
+       <p>How can we make sure events can be tagged for specific resource versions even on remote actors?</p>
+     </ul>
+    <li data-md>
+     <p>Work out data discovery more.</p>
+     <ul>
+      <li data-md>
+       <p>work out requirement for shape trees according to the interop spec</p>
+     </ul>
+   </ol>
   </main>
   <div data-fill-with="conformance">
    <h2 class="no-ref no-num heading settled" id="conformance"><span class="content"> Conformance</span><a class="self-link" href="#conformance"></a></h2>
@@ -1736,15 +1767,32 @@ All inboxes defined on the data pod MUST support GET and POST requests on the In
    <li><a href="#dashboard">Dashboard</a><span>, in §3</span>
    <li><a href="#data-pod">Data Pod</a><span>, in §3</span>
    <li><a href="#inbox">Inbox</a><span>, in §3</span>
-   <li><a href="#local-background-process">local background process</a><span>, in §5.1</span>
+   <li><a href="#local-background-process">local background process</a><span>, in §5</span>
    <li><a href="#maintainer">Maintainer</a><span>, in §3</span>
    <li><a href="#policy">Policy</a><span>, in §3</span>
-   <li><a href="#remote-web-service">remote web service</a><span>, in §5.1</span>
+   <li><a href="#remote-web-service">remote web service</a><span>, in §5</span>
    <li><a href="#service-hub">Service Hub</a><span>, in §3</span>
+  </ul>
+  <aside class="dfn-panel" data-for="term-for-concept-event">
+   <a href="https://dom.spec.whatwg.org/#concept-event">https://dom.spec.whatwg.org/#concept-event</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-concept-event">2. Introduction</a>
+    <li><a href="#ref-for-concept-event①">8. Resource Event Information</a>
+   </ul>
+  </aside>
+  <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
+  <ul class="index">
+   <li>
+    <a data-link-type="biblio">[DOM]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="term-for-concept-event" style="color:initial">event</span>
+    </ul>
   </ul>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
   <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
+   <dt id="biblio-dom">[DOM]
+   <dd>Anne van Kesteren. <a href="https://dom.spec.whatwg.org/">DOM Standard</a>. Living Standard. URL: <a href="https://dom.spec.whatwg.org/">https://dom.spec.whatwg.org/</a>
    <dt id="biblio-rfc2119">[RFC2119]
    <dd>S. Bradner. <a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>. March 1997. Best Current Practice. URL: <a href="https://tools.ietf.org/html/rfc2119">https://tools.ietf.org/html/rfc2119</a>
   </dl>
@@ -1753,18 +1801,6 @@ All inboxes defined on the data pod MUST support GET and POST requests on the In
    <dt id="biblio-spec-overview">[SPEC-OVERVIEW]
    <dd>Miel Vander Sande. <a href="http://mellonscholarlycommunication.github.io/spec-overview/">Overview of the ResearcherPod specifications</a>. Editor’s Draft. URL: <a href="http://mellonscholarlycommunication.github.io/spec-overview/">http://mellonscholarlycommunication.github.io/spec-overview/</a>
   </dl>
-  <aside class="dfn-panel" data-for="actor">
-   <b><a href="#actor">#actor</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-actor">4. High-level overview</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="artefact">
-   <b><a href="#artefact">#artefact</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-artefact">4. High-level overview</a>
-   </ul>
-  </aside>
   <aside class="dfn-panel" data-for="data-pod">
    <b><a href="#data-pod">#data-pod</a></b><b>Referenced in:</b>
    <ul>
@@ -1775,12 +1811,6 @@ All inboxes defined on the data pod MUST support GET and POST requests on the In
    <b><a href="#inbox">#inbox</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-inbox">4. High-level overview</a>
-   </ul>
-  </aside>
-  <aside class="dfn-panel" data-for="policy">
-   <b><a href="#policy">#policy</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-policy">4. High-level overview</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
